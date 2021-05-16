@@ -2,6 +2,7 @@
   "name": "exercise-tracker",
   "version": "0.1.0",
   "private": true,
+  "proxy":"http://localhost5000",
   "dependencies": {
     "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "^11.2.6",
@@ -16,9 +17,9 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "EXERCISE-TRACKER":"cd EXERCISE-TRACKER && npm start",
-    "dev": "concurrently \"nodemon server.js arg\" \" npm run EXERCISE-TRACKER\"",
+    "client": "react-scripts start",
+    "backend":"cd backend && nodemon server",
+    "start": "concurrently \"npm run backend\" \" npm run client\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
