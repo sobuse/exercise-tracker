@@ -17,6 +17,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "EXERCISE-TRACKER":"cd EXERCISE-TRACKER && npm start",
+    "dev": "concurrently \"nodemon server.js arg\" \" npm run EXERCISE-TRACKER\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
