@@ -2,13 +2,39 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { createJWT } = require("../utils/auth");
+const emailRegexp =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 exports.signup = (req, res, next) => {
   let { name, email, password, password_confirmation } = req.body;
+  let errors = [];
+  if (!name) {
+    errors.push({ name: "required" });
+  }
+  if (!email) {
+    errors.push({ email: "required" });
+  }
+  if (!emailRegexp.test(email)) {
+    errors.push({ email: "invalid" });
+  }
+  if (!password) {
+    errors.push({ password: "required" });
+  }
+  if (!password_confirmation) {
+    errors.push({
+      password_confirmation: "required",
+    });
+  }
+  if (password != password_confirmation) {
+    errors.push({ password: "mismatch" });
+  }
+  if (errors.length > 0) {
+    return res.status(422).json({ errors: errors });
+  }
   User.findOne({ email: email })
     .then((user) => {
       if (user) {
         return res
-          .status(400)
+          .status(422)
           .json({ errors: [{ user: "email already exists" }] });
       } else {
         const user = new User({
@@ -23,7 +49,7 @@ exports.signup = (req, res, next) => {
             user
               .save()
               .then((response) => {
-                res.status(201).json({
+                res.status(200).json({
                   success: true,
                   result: response,
                 });
@@ -45,6 +71,19 @@ exports.signup = (req, res, next) => {
 };
 exports.signin = (req, res) => {
   let { email, password } = req.body;
+  let errors = [];
+  if (!email) {
+    errors.push({ email: "required" });
+  }
+  if (!emailRegexp.test(email)) {
+    errors.push({ email: "invalid email" });
+  }
+  if (!password) {
+    errors.push({ passowrd: "required" });
+  }
+  if (errors.length > 0) {
+    return res.status(422).json({ errors: errors });
+  }
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
@@ -69,7 +108,7 @@ exports.signin = (req, res) => {
                   res.status(500).json({ erros: err });
                 }
                 if (decoded) {
-                  return res.status(201).json({
+                  return res.status(200).json({
                     success: true,
                     token: access_token,
                     message: user,
